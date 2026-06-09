@@ -1,0 +1,83 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: taxi-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: taxi_dw
+      MYSQL_USER: taxi
+      MYSQL_PASSWORD: taxi123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-utaxi", "-ptaxi123"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: taxi-namenode
+    environment:
+      CLUSTER_NAME: taxi-lakehouse
+      CORE_CONF_fs_defaultFS: hdfs://namenode:9000
+    ports:
+      - "9870:9870"
+      - "9000:9000"
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: taxi-datanode
+    environment:
+      CORE_CONF_fs_defaultFS: hdfs://namenode:9000
+      SERVICE_PRECONDITION: namenode:9870
+    depends_on:
+      - namenode
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+
+  spark-master:
+    image: bitnami/spark:3.5.1
+    container_name: taxi-spark-master
+    user: root
+    environment:
+      SPARK_MODE: master
+      SPARK_MASTER_HOST: spark-master
+      HADOOP_USER_NAME: root
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    volumes:
+      - ./jobs:/opt/bitnami/spark/jobs
+      - ./src:/opt/bitnami/spark/src
+      - ./data:/opt/bitnami/spark/data
+    depends_on:
+      - namenode
+      - datanode
+      - mysql
+
+  spark-worker:
+    image: bitnami/spark:3.5.1
+    container_name: taxi-spark-worker
+    user: root
+    environment:
+      SPARK_MODE: worker
+      SPARK_MASTER_URL: spark://spark-master:7077
+      HADOOP_USER_NAME: root
+    volumes:
+      - ./jobs:/opt/bitnami/spark/jobs
+      - ./src:/opt/bitnami/spark/src
+      - ./data:/opt/bitnami/spark/data
+    depends_on:
+      - spark-master
+
+volumes:
+  mysql_data:
+  hadoop_namenode:
+  hadoop_datanode:
+
