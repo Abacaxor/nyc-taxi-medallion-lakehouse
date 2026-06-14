@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Narracao do Video Sem Som - NYC Taxi Medallion Lakehouse</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #5c6773;
+      --bg: #f7f4ea;
+      --panel: #ffffff;
+      --line: #d7d2c2;
+      --teal: #007c78;
+      --blue: #315c9a;
+      --yellow: #f5b942;
+      --coral: #e85d4f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    header {
+      padding: 22px 34px;
+      color: #fff;
+      background: var(--ink);
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    header p {
+      margin: 4px 0 0;
+      color: #dfe6ee;
+      font-size: 14px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: minmax(420px, 1.25fr) minmax(360px, 0.75fr);
+      gap: 22px;
+      padding: 24px;
+      min-height: calc(100vh - 86px);
+    }
+
+    .video-panel,
+    .script-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    video {
+      width: 100%;
+      display: block;
+      background: #000;
+      aspect-ratio: 16 / 9;
+    }
+
+    .video-meta,
+    .script-head {
+      padding: 16px 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .video-meta code {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .script-panel {
+      max-height: calc(100vh - 134px);
+      overflow: auto;
+    }
+
+    .script-head {
+      position: sticky;
+      top: 0;
+      background: var(--panel);
+      z-index: 2;
+      border-top: 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .script-head h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .script-head p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .segment {
+      padding: 16px 18px 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .segment.active {
+      background: #fff7df;
+      border-left: 6px solid var(--yellow);
+      padding-left: 12px;
+    }
+
+    .segment h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .segment p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 15px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 6px;
+      background: var(--teal);
+      color: #fff;
+      padding: 8px 10px;
+      font-weight: 700;
+      cursor: pointer;
+      min-width: 92px;
+    }
+
+    button:hover {
+      background: var(--blue);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 16px 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .chip {
+      background: #eef4f4;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 980px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .script-panel {
+        max-height: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>NYC Taxi Medallion Lakehouse</h1>
+      <p>Roteiro de narracao ao vivo para acompanhar o video sem som de 12:08</p>
+    </div>
+    <strong>Video sem som + narracao</strong>
+  </header>
+
+  <main>
+    <section class="video-panel">
+      <video id="video" controls preload="metadata" src="file:///E:/halva/Gravando%202026-06-14%20172140.mp4"></video>
+      <div class="video-meta">
+        <strong>Arquivo do video</strong>
+        <code>E:\halva\Gravando 2026-06-14 172140.mp4</code>
+      </div>
+      <div class="chips">
+        <span class="chip">MySQL + CSV</span>
+        <span class="chip">HDFS</span>
+        <span class="chip">Spark</span>
+        <span class="chip">Delta Lake</span>
+        <span class="chip">Bronze / Prata / Ouro</span>
+      </div>
+    </section>
+
+    <aside class="script-panel">
+      <div class="script-head">
+        <h2>Narracao por timestamp</h2>
+        <p>Clique no tempo para pular o video. Use o texto como fala ao vivo enquanto o video mudo roda.</p>
+      </div>
+
+      <div id="segments"></div>
+    </aside>
+  </main>
+
+  <script>
+    const segments = [
+      {
+        start: 0,
+        end: 35,
+        time: "00:00 - 00:35",
+        title: "Abertura",
+        text: "Boa noite. Este video apresenta o projeto NYC Taxi Medallion Lakehouse, desenvolvido para demonstrar um pipeline de dados completo usando uma arquitetura Medallion em Delta Lake. A ideia e sair de fontes reais, passar por MySQL, CSV, HDFS e Spark, e chegar a tabelas analiticas prontas para consulta."
+      },
+      {
+        start: 35,
+        end: 80,
+        time: "00:35 - 01:20",
+        title: "Objetivo do trabalho",
+        text: "O objetivo principal e cumprir o fluxo pedido no trabalho: iniciar em MySQL e arquivos CSV, armazenar e processar no HDFS, e organizar os dados nas camadas Bronze, Prata e Ouro. O projeto tambem foi preparado para ser reproduzivel com Docker."
+      },
+      {
+        start: 80,
+        end: 130,
+        time: "01:20 - 02:10",
+        title: "Dataset",
+        text: "O dataset usado e publico e conhecido: viagens de taxi amarelo de Nova York, do NYC Open Data. Ele traz horarios de embarque e desembarque, distancia, localizacoes, tarifa, gorjeta, taxas e forma de pagamento. Tambem usamos o Taxi Zone Lookup da TLC."
+      },
+      {
+        start: 130,
+        end: 180,
+        time: "02:10 - 03:00",
+        title: "Estrutura do projeto",
+        text: "A estrutura foi organizada para facilitar a demonstracao. Temos docker-compose para MySQL, HDFS e Spark, scripts para download e carga, jobs para Bronze, Prata, Ouro e Validacao, alem da documentacao com arquitetura, checklist e comandos rapidos."
+      },
+      {
+        start: 180,
+        end: 235,
+        time: "03:00 - 03:55",
+        title: "Origem MySQL e CSV",
+        text: "Primeiro, o script baixa os dados reais. Depois, as viagens brutas sao carregadas na tabela yellow_taxi_trips_raw no MySQL, simulando uma origem transacional. O taxi_zone_lookup.csv fica como origem CSV oficial para enriquecer os dados."
+      },
+      {
+        start: 235,
+        end: 295,
+        time: "03:55 - 04:55",
+        title: "Camada Bronze",
+        text: "Na Bronze, o Spark le as fontes quase sem regra de negocio. A tabela yellow_trips_mysql guarda o snapshot das viagens vindas do MySQL, e a tabela taxi_zones_csv guarda o lookup de zonas vindo do CSV."
+      },
+      {
+        start: 295,
+        end: 365,
+        time: "04:55 - 06:05",
+        title: "Camada Prata",
+        text: "Na Prata, os dados sao padronizados. O pipeline converte tipos, trata datas, calcula duracao da corrida, hora de embarque, percentual de gorjeta e rotulo de pagamento. Tambem remove nulos, duplicatas, distancias invalidas e valores negativos."
+      },
+      {
+        start: 365,
+        end: 435,
+        time: "06:05 - 07:15",
+        title: "Enriquecimento",
+        text: "Ainda na Prata, as viagens sao enriquecidas com o lookup de zonas. Isso permite transformar IDs de localizacao em informacoes mais compreensiveis, como borough, zona de embarque e zona de destino."
+      },
+      {
+        start: 435,
+        end: 515,
+        time: "07:15 - 08:35",
+        title: "Camada Ouro",
+        text: "Na Ouro, criamos tabelas analiticas: receita por bairro e hora, desempenho por zona, resumo por forma de pagamento, receita por dia, top zonas de embarque e resumo de qualidade dos dados."
+      },
+      {
+        start: 515,
+        end: 575,
+        time: "08:35 - 09:35",
+        title: "Validacao",
+        text: "O projeto inclui um job de validacao. Ele mostra contagens, schemas, amostras e consultas SQL sobre Bronze, Prata e Ouro. Isso ajuda a provar durante a apresentacao que o pipeline realmente executou."
+      },
+      {
+        start: 575,
+        end: 635,
+        time: "09:35 - 10:35",
+        title: "Resultados esperados",
+        text: "Com as tabelas Ouro, conseguimos responder perguntas como quais bairros geram mais receita, quais horarios concentram mais corridas, quais zonas aparecem no top volume, como cada forma de pagamento se comporta e quantos registros foram removidos."
+      },
+      {
+        start: 635,
+        end: 685,
+        time: "10:35 - 11:25",
+        title: "Como rodar",
+        text: "Para reproduzir, basta abrir o Docker Desktop e executar o passo a passo do README. O atalho principal e scripts/run_all.ps1, que baixa os dados, sobe o ambiente, carrega o MySQL e executa o pipeline completo."
+      },
+      {
+        start: 685,
+        end: 728,
+        time: "11:25 - 12:08",
+        title: "Conclusao",
+        text: "Como conclusao, o projeto entrega uma solucao completa e apresentavel: usa dados reais, tem duas origens, passa por HDFS, usa Delta Lake, separa Bronze, Prata e Ouro, aplica qualidade de dados e gera indicadores de negocio."
+      }
+    ];
+
+    const video = document.getElementById("video");
+    const container = document.getElementById("segments");
+
+    function render() {
+      container.innerHTML = "";
+      segments.forEach((segment, index) => {
+        const article = document.createElement("article");
+        article.className = "segment";
+        article.dataset.index = index;
+        article.innerHTML = `
+          <h3>
+            <span>${segment.title}</span>
+            <button type="button" data-start="${segment.start}">${segment.time}</button>
+          </h3>
+          <p>${segment.text}</p>
+        `;
+        container.appendChild(article);
+      });
+    }
+
+    function setActive() {
+      const current = video.currentTime;
+      document.querySelectorAll(".segment").forEach((el, index) => {
+        const segment = segments[index];
+        el.classList.toggle("active", current >= segment.start && current < segment.end);
+      });
+    }
+
+    container.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-start]");
+      if (!button) return;
+      video.currentTime = Number(button.dataset.start);
+      video.play();
+    });
+
+    video.addEventListener("timeupdate", setActive);
+    render();
+    setActive();
+  </script>
+</body>
+</html>
