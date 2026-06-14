@@ -5,4 +5,4 @@ data/raw/csv/*.csv
 data/gold_exports/*
 !data/raw/csv/.gitkeep
 !data/gold_exports/.gitkeep
-
+apresentacao/video_apresentacao.mp4
